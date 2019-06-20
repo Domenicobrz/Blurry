@@ -2,7 +2,7 @@
 Simulating depth of field with particles on a shader
 
 
-<img src="https://user-images.githubusercontent.com/25647854/55956659-bf734b80-5c64-11e9-9e8c-92e5ebd43d41.jpg" width="100%">
+<img src="https://github.com/Domenicobrz/DOF-lines-renderer/blob/master/screenshot.jpg?raw=true" width="100%">
  
 ------
 [Live demo here](https://domenicobrz.github.io/webgl/projects/DOFlinesrenderer/)
