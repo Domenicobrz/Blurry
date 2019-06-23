@@ -9,12 +9,16 @@ var renderer;
 var canvas;
 
 var postProcQuadMaterial;
-var linesMaterial;
 
 var capturerStarted = false;
 
 let lines = [ ];
 let linesGeometry;
+let linesMaterial;
+
+let quads = [ ];
+let quadsGeometry;
+let quadsMaterial;
 
 let samples = 0;
 
@@ -107,6 +111,33 @@ function init() {
         blendDstAlpha: THREE.OneFactor,  
     });
 
+    quadsMaterial = new THREE.ShaderMaterial({
+        vertexShader: quadv,
+        fragmentShader: quadf,
+        uniforms: {
+            uTexture: { type: "t",   value: new THREE.TextureLoader().load("assets/textures/t3/example.jpg") },
+            uDepthMap: { type: "t",  value: new THREE.TextureLoader().load("assets/textures/t3/depth.jpg") },
+            uNormalMap: { type: "t", value: new THREE.TextureLoader().load("assets/textures/t3/normal.jpg") },
+            uTime: { value: 0 },
+            uRandom: { value: 0 },
+            uRandomVec4: new THREE.Uniform(new THREE.Vector4(0, 0, 0, 0)),
+            uFocalDepth: { value: cameraFocalDistance },
+            uBokehStrength: { value: bokehStrength },
+            uMinimumLineSize: { value: minimumLineSize },
+            uFocalPowerFunction: { value: focalPowerFunction },
+        },
+
+        side:           THREE.DoubleSide,
+        depthTest:      false,
+
+        blending:      THREE.CustomBlending,
+        blendEquation: THREE.AddEquation,
+        blendSrc:      THREE.OneFactor, 
+        blendSrcAlpha: THREE.OneFactor,
+        blendDst:      THREE.OneFactor, 
+        blendDstAlpha: THREE.OneFactor,  
+    });
+
 
     createLinesWrapper(0);
 
@@ -140,6 +171,15 @@ function render(now) {
         linesMaterial.uniforms.uRandom.value = Math.random() * 1000;
         linesMaterial.uniforms.uTime.value = (now * 0.001) % 100;   // modulating time by 100 since it appears hash12 suffers with higher time values
         linesMaterial.uniforms.uRandomVec4.value = new THREE.Vector4(Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100);
+
+        quadsMaterial.uniforms.uBokehStrength.value = bokehStrength;
+        quadsMaterial.uniforms.uFocalDepth.value = cameraFocalDistance;
+        quadsMaterial.uniforms.uFocalPowerFunction.value = focalPowerFunction;
+        quadsMaterial.uniforms.uMinimumLineSize.value = minimumLineSize;
+        quadsMaterial.uniforms.uRandom.value = Math.random() * 1000;
+        quadsMaterial.uniforms.uTime.value = (now * 0.001) % 100;   // modulating time by 100 since it appears hash12 suffers with higher time values
+        quadsMaterial.uniforms.uRandomVec4.value = new THREE.Vector4(Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100);
+
         renderer.render(scene, camera, offscreenRT);
     }
 
@@ -181,6 +221,7 @@ function resetCanvas() {
 }
 
 function createLinesWrapper(frames) {
+    // ***************** lines creation 
     lines = [];
     scene.remove(scene.getObjectByName("points"));
 
@@ -191,6 +232,25 @@ function createLinesWrapper(frames) {
     mesh.name = "points";
 
     scene.add(mesh);
+    // ***************** lines creation - END
+
+
+
+
+
+    // ***************** quads creation 
+    quads = [];
+    scene.remove(scene.getObjectByName("quad-points"));
+
+    createQuads(frames);
+
+    createQuadsGeometry();
+    let quadmesh = new THREE.Points(quadsGeometry, quadsMaterial);
+    quadmesh.name = "quad-points";
+
+    scene.add(quadmesh);
+    // ***************** quads creation - END
+
 }
 
 function createLinesGeometry() {
@@ -278,6 +338,67 @@ function createLinesGeometry() {
     
     linesGeometry = geometry;
 } 
+
+function createQuadsGeometry() {
+
+    var geometry  = new THREE.BufferGeometry();
+    var position1 = [];
+    var position2 = [];
+    var position3 = [];
+    var uv1 = [];
+    var uv2 = [];
+    var color     = [];
+    var seeds     = [];
+
+    for(let j = 0; j < quads.length; j++) {
+
+        let quad = quads[j];
+
+        let lx1 = quad.v1.x; 
+        let ly1 = quad.v1.y;
+        let lz1 = quad.v1.z;
+    
+        let lx2 = quad.v2.x; 
+        let ly2 = quad.v2.y;
+        let lz2 = quad.v2.z;
+
+        let lx3 = quad.v3.x; 
+        let ly3 = quad.v3.y;
+        let lz3 = quad.v3.z;
+
+        let u1 = quad.uv1.x;
+        let v1 = quad.uv1.y;
+
+        let u2 = quad.uv2.x;
+        let v2 = quad.uv2.y;
+
+    
+        let points = pointsPerLine;
+        let invPointsPerLine = 1 / points;
+
+        for(let ppr = 0; ppr < points; ppr++) {
+            position1.push(lx1, ly1, lz1);
+            position2.push(lx2, ly2, lz2);
+            position3.push(lx3, ly3, lz3);
+            uv1.push(u1, v1);
+            uv2.push(u2, v2);
+            color.push(quad.col.x * invPointsPerLine, quad.col.y * invPointsPerLine, quad.col.z * invPointsPerLine);
+
+            seeds.push(Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100);    
+        }
+    }
+ 
+    geometry.addAttribute( 'position',  new THREE.BufferAttribute( new Float32Array(position1), 3 ) );
+    geometry.addAttribute( 'position1', new THREE.BufferAttribute( new Float32Array(position2), 3 ) );
+    geometry.addAttribute( 'position2', new THREE.BufferAttribute( new Float32Array(position3), 3 ) );
+    geometry.addAttribute( 'uv1',       new THREE.BufferAttribute( new Float32Array(uv1),       2 ) );
+    geometry.addAttribute( 'uv2',       new THREE.BufferAttribute( new Float32Array(uv2),       2 ) );
+    geometry.addAttribute( 'color',     new THREE.BufferAttribute( new Float32Array(color),     3 ) );
+    geometry.addAttribute( 'aSeeds',    new THREE.BufferAttribute( new Float32Array(seeds),     4 ) );
+    
+    quadsGeometry = geometry;
+} 
+
 
 
 function buildControls() {

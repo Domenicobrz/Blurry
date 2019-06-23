@@ -9,16 +9,16 @@ var focalPowerFunction = 0;
 var minimumLineSize = 0.015;
 
 // how many render calls are made each frame
-var drawCallsPerFrame = 5;
+var drawCallsPerFrame = 10;
 
 
 // wether each line has assigned a quantity of points proportional to its length or a fixed number instead
 var useLengthSampling = false;
 
 // if $useLengthSampling is false, every line will by rendered by default with $pointsPerLine points
-var pointsPerLine     = 25;
+var pointsPerLine     = 150000;
 
 // if $useLengthSampling is true, every line will be drawn with an amount of points that is proportional to the line's length,
 // use $pointsPerFrame to determine how many points will be drawn in a single drawcall. Keep in mind that each line is drawn with
 // at least one point
-var pointsPerFrame = 1000000;
+var pointsPerFrame = 500000;
