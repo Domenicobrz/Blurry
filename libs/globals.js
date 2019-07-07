@@ -16,9 +16,14 @@ var drawCallsPerFrame = 10;
 var useLengthSampling = false;
 
 // if $useLengthSampling is false, every line will by rendered by default with $pointsPerLine points
-var pointsPerLine     = 150000;
+var pointsPerLine     = 500;
 
 // if $useLengthSampling is true, every line will be drawn with an amount of points that is proportional to the line's length,
 // use $pointsPerFrame to determine how many points will be drawn in a single drawcall. Keep in mind that each line is drawn with
 // at least one point
 var pointsPerFrame = 500000;
+
+
+
+var useBokehTexture = false;
+var bokehTexturePath = "assets/bokeh/pentagon.png";

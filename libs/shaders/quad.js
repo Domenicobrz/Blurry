@@ -7,8 +7,8 @@ attribute vec3 color;
 attribute vec4 aSeeds;
 
 uniform sampler2D uTexture;
-uniform sampler2D uDepthMap;
 uniform sampler2D uNormalMap;
+uniform sampler2D uBokehTexture;
 
 uniform float uRandom;
 uniform vec4  uRandomVec4;
@@ -17,6 +17,10 @@ uniform float uBokehStrength;
 uniform float uMinimumLineSize;
 uniform float uFocalPowerFunction;
 uniform float uTime;
+
+
+#define USE_BOKEH_TEXTURE ` + (useBokehTexture ? 1 : 0) + `
+
 
 varying vec3 vColor;
 
@@ -36,20 +40,6 @@ float n1rand( vec2 n )
 	float nrnd0 = nrand( n + 0.7*t );
 	return nrnd0;
 }
-
-
-
-
-// vec3 getNormal(vec2 uvs, float disp) {
-
-//     vec3 pos = texture2D(uDepthMap, )
-
-
-// }
-
-
-
-
 
 
 void main() {
@@ -75,6 +65,7 @@ void main() {
     float uu = fract(o1 + uRandomVec4.x + aSeeds.z); 
     float vv = fract(o2 + uRandomVec4.y + aSeeds.w);
     vec3 positiont = position + uu * (position1 - position) + vv * (position2 - position);
+    vec3 viewSpacePositionT = (modelViewMatrix * vec4(positiont, 1.0)).xyz;
 
     // ******** texture coordinates calculation
     float ud = uv2.x - uv1.x;
@@ -87,40 +78,67 @@ void main() {
     vColor = pow(vColor, vec3(2.0));
 
 
-    // ******** depthmap displacement 
-    float dmd = texture2D(uDepthMap, vec2(ut, vt)).r;
-    positiont.z += dmd * 4.5;
-
-    // vec3 normalt = texture2D(uNormalMap, vec2(ut, vt)).rgb;
-    // vec3 lightDir = normalize(vec3(-1.0, 0.0, 0.0));
-    // vColor *= max(dot(normalt, -lightDir), 0.0); 
-    // vColor *= normalt; 
-    // ******** depthmap displacement - END 
 
 
 
-	float distanceFromFocalPoint = length((modelViewMatrix * vec4(positiont, 1.0)).z - (-uFocalDepth));
+
+	float distanceFromFocalPoint = abs(viewSpacePositionT.z - (-uFocalDepth));
 	if(uFocalPowerFunction > 0.5) {
 		distanceFromFocalPoint = pow(distanceFromFocalPoint, 1.5);
 	}
 
 
     float bokehStrength = distanceFromFocalPoint * uBokehStrength;
-	bokehStrength = max(bokehStrength, 0.0);//uMinimumLineSize);
+	bokehStrength = max(bokehStrength, 0.0);  //uMinimumLineSize);
 
-    // offset in random point along the sphere
-    vec4 randNumbers = vec4( o2, o3, o4, o5 );
 
-    float lambda = randNumbers.x;
-    float u      = randNumbers.y * 2.0 - 1.0;
-    float phi    = randNumbers.z * 6.28;
-    float R      = bokehStrength;
 
-    float x = R * pow(lambda, 0.33333) * sqrt(1.0 - u * u) * cos(phi);
-    float y = R * pow(lambda, 0.33333) * sqrt(1.0 - u * u) * sin(phi);
-    float z = R * pow(lambda, 0.33333) * u;
 
-    positiont += vec3(x, y, z);
+
+
+
+
+    
+
+    #if USE_BOKEH_TEXTURE 
+        vec4 randNumbers = vec4( o2, o3, o4, o5 );
+        float ux = randNumbers.x;
+        float uy = randNumbers.y;
+
+        float x  = (ux * 2.0 - 1.0) * bokehStrength;
+        float y  = (uy * 2.0 - 1.0) * bokehStrength;
+
+        float bokehVal = texture2D(uBokehTexture, vec2(ux, uy)).x;
+        viewSpacePositionT += vec3(x, y, 0.0);
+        vColor *= bokehVal;
+    #else
+        // if we're not using a bokeh texture we'll randomly displace points
+        // in a sphere
+
+        vec4 randNumbers = vec4( o2, o3, o4, o5 );
+
+        float lambda = randNumbers.x;
+        float u      = randNumbers.y * 2.0 - 1.0;
+        float phi    = randNumbers.z * 6.28;
+        float R      = bokehStrength;
+
+        float x = R * pow(lambda, 0.33333) * sqrt(1.0 - u * u) * cos(phi);
+        float y = R * pow(lambda, 0.33333) * sqrt(1.0 - u * u) * sin(phi);
+        float z = R * pow(lambda, 0.33333) * u;
+
+        viewSpacePositionT += vec3(x, y, z); 
+    #endif
+
+
+
+
+
+
+
+
+
+
+
 
 
 	// two different functions for color attenuation if you need it
@@ -131,14 +149,14 @@ void main() {
 	// 	vColor.b * exp(-distanceFromFocalPoint * 0.05)	
 	// );
 
-	vColor = vec3(
-		vColor.r / (1.0 + pow(distanceFromFocalPoint * 0.05, 2.71828)),
-		vColor.g / (1.0 + pow(distanceFromFocalPoint * 0.05, 2.71828)),
-		vColor.b / (1.0 + pow(distanceFromFocalPoint * 0.05, 2.71828))	
-	);
+	// vColor = vec3(
+	// 	vColor.r / (1.0 + pow(distanceFromFocalPoint * 0.05, 2.71828)),
+	// 	vColor.g / (1.0 + pow(distanceFromFocalPoint * 0.05, 2.71828)),
+	// 	vColor.b / (1.0 + pow(distanceFromFocalPoint * 0.05, 2.71828))	
+	// );
 
 
-    vec4 projectedPosition = projectionMatrix * modelViewMatrix * vec4(positiont, 1.0);
+    vec4 projectedPosition = projectionMatrix * vec4(viewSpacePositionT, 1.0);
     gl_Position = projectedPosition;
 
     gl_PointSize = 1.0;

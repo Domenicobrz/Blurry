@@ -98,6 +98,7 @@ function init() {
             uBokehStrength: { value: bokehStrength },
             uMinimumLineSize: { value: minimumLineSize },
             uFocalPowerFunction: { value: focalPowerFunction },
+            uBokehTexture: { type: "t", value: new THREE.TextureLoader().load(bokehTexturePath) },
         },
 
         side:           THREE.DoubleSide,
@@ -115,9 +116,7 @@ function init() {
         vertexShader: quadv,
         fragmentShader: quadf,
         uniforms: {
-            uTexture: { type: "t",   value: new THREE.TextureLoader().load("assets/textures/t3/example.jpg") },
-            uDepthMap: { type: "t",  value: new THREE.TextureLoader().load("assets/textures/t3/depth.jpg") },
-            uNormalMap: { type: "t", value: new THREE.TextureLoader().load("assets/textures/t3/normal.jpg") },
+            uTexture: { type: "t",   value: new THREE.TextureLoader().load("assets/textures/example6.jpg") },
             uTime: { value: 0 },
             uRandom: { value: 0 },
             uRandomVec4: new THREE.Uniform(new THREE.Vector4(0, 0, 0, 0)),
@@ -125,6 +124,7 @@ function init() {
             uBokehStrength: { value: bokehStrength },
             uMinimumLineSize: { value: minimumLineSize },
             uFocalPowerFunction: { value: focalPowerFunction },
+            uBokehTexture: { type: "t", value: new THREE.TextureLoader().load(bokehTexturePath) },
         },
 
         side:           THREE.DoubleSide,

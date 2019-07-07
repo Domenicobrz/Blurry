@@ -12,6 +12,10 @@ uniform float uMinimumLineSize;
 uniform float uFocalPowerFunction;
 uniform float uTime;
 
+uniform sampler2D uBokehTexture;
+
+#define USE_BOKEH_TEXTURE ` + (useBokehTexture ? 1 : 0) + `
+
 varying vec3 vColor;
 
 
@@ -54,9 +58,10 @@ void main() {
 
     float t = o1; 
     vec3 positiont = position * (1.0 - t) + position1 * t;
+    vec3 viewSpacePositionT = (modelViewMatrix * vec4(positiont, 1.0)).xyz;
     vColor = color1 * (1.0 - t) + color2 * t;
 
-	float distanceFromFocalPoint = length((modelViewMatrix * vec4(positiont, 1.0)).z - (-uFocalDepth));
+	float distanceFromFocalPoint = abs(viewSpacePositionT.z - (-uFocalDepth));
 	if(uFocalPowerFunction > 0.5) {
 		distanceFromFocalPoint = pow(distanceFromFocalPoint, 1.5);
 	}
@@ -65,19 +70,54 @@ void main() {
     float bokehStrength = distanceFromFocalPoint * uBokehStrength;
 	bokehStrength = max(bokehStrength, uMinimumLineSize);
 
-    // offset in random point along the sphere
-    vec4 randNumbers = vec4( o2, o3, o4, o5 );
 
-    float lambda = randNumbers.x;
-    float u      = randNumbers.y * 2.0 - 1.0;
-    float phi    = randNumbers.z * 6.28;
-    float R      = bokehStrength;
 
-    float x = R * pow(lambda, 0.33333) * sqrt(1.0 - u * u) * cos(phi);
-    float y = R * pow(lambda, 0.33333) * sqrt(1.0 - u * u) * sin(phi);
-    float z = R * pow(lambda, 0.33333) * u;
 
-    positiont += vec3(x, y, z);
+
+
+
+
+    #if USE_BOKEH_TEXTURE 
+        vec4 randNumbers = vec4( o2, o3, o4, o5 );
+        float ux = randNumbers.x;
+        float uy = randNumbers.y;
+
+        float x  = (ux * 2.0 - 1.0) * bokehStrength;
+        float y  = (uy * 2.0 - 1.0) * bokehStrength;
+
+        float bokehVal = texture2D(uBokehTexture, vec2(ux, uy)).x;
+        viewSpacePositionT += vec3(x, y, 0.0);
+        vColor *= bokehVal;
+    #else
+        // if we're not using a bokeh texture we'll randomly displace points
+        // in a sphere
+
+        vec4 randNumbers = vec4( o2, o3, o4, o5 );
+
+        float lambda = randNumbers.x;
+        float u      = randNumbers.y * 2.0 - 1.0;
+        float phi    = randNumbers.z * 6.28;
+        float R      = bokehStrength;
+
+        float x = R * pow(lambda, 0.33333) * sqrt(1.0 - u * u) * cos(phi);
+        float y = R * pow(lambda, 0.33333) * sqrt(1.0 - u * u) * sin(phi);
+        float z = R * pow(lambda, 0.33333) * u;
+
+        viewSpacePositionT += vec3(x, y, z); 
+    #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	// two different functions for color attenuation if you need it
@@ -95,7 +135,8 @@ void main() {
 	// );
 
 
-    vec4 projectedPosition = projectionMatrix * modelViewMatrix * vec4(positiont, 1.0);
+    // vec4 projectedPosition = projectionMatrix * modelViewMatrix * vec4(positiont, 1.0);
+    vec4 projectedPosition = projectionMatrix * vec4(viewSpacePositionT, 1.0);
     gl_Position = projectedPosition;
 
     gl_PointSize = 1.0;
