@@ -1,4 +1,4 @@
-# DOF-lines-renderer
+# Blurry
 Simulating depth of field with particles on a shader
 
 
