@@ -11,23 +11,30 @@ function createQuads(frame) {
 
         // if(Math.random() > 0.3) continue;
 
-
         let t = indexToUvs(Math.floor(Math.random() * 100));
+       
 
-        quads.push(
-            new Quad(0,0,0, t.us, t.vs, t.ue, t.ve)
-            // .rotate(0,0,1, i*0.12 + j * 0.3)
-            // .rotate(1,0,0, i*0.25)
-            // .rotate(0,1,0, j*0.2)
-            .color(2500, 2500, 2500)
-            .scale(2)
-            // .rotate(0,0,1, Math.random() * 1.28)
-            // .rotate(1,0,0, Math.random() * 1.28)
-            // .rotate(0,1,0, Math.random() * 1.28)
-            .translate(i * 3, 0, j * 3)
-            .translate(0, Math.cos(i * 0.3) + Math.sin(j * 0.25), 0)
-            // .translate(0, Math.cos(i * 0.5) * 0.2  + Math.sin(j * 1) * 0.2 )
-        );
+        let quad = new Quad(0,0,0, t.us, t.vs, t.ue, t.ve)
+        // .rotate(0,0,1, i*0.12 + j * 0.3)
+        // .rotate(1,0,0, i*0.25)
+        // .rotate(0,1,0, j*0.2)
+        .color(2500, 2500, 2500)
+        .scale(2)
+        // .rotate(0,0,1, Math.random() * 1.28)
+        // .rotate(1,0,0, Math.random() * 1.28)
+        // .rotate(0,1,0, Math.random() * 1.28)
+        .translate(i * 3, 0, j * 3)
+        .translate(0, Math.cos(i * 0.3) + Math.sin(j * 0.25), 0);
+        // .translate(0, Math.cos(i * 0.5) * 0.2  + Math.sin(j * 1) * 0.2 )
+
+
+        if( i === 0 && j === 0) {
+            quad.scale(5);
+        };
+
+
+
+        quads.push(quad);
     }
 }
 

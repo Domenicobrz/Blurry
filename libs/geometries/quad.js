@@ -7,6 +7,7 @@ class Quad {
         this.center = new THREE.Vector3(xx, yy, zz);
         this.width  = 1;
         this.height = 1;
+        this.weight = 1;
 
         this.v1 = new THREE.Vector3(xx - this.width * 0.5, yy - this.height * 0.5, zz);
         this.v2 = new THREE.Vector3(xx + this.width * 0.5, yy - this.height * 0.5, zz);

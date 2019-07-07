@@ -350,6 +350,30 @@ function createQuadsGeometry() {
     var color     = [];
     var seeds     = [];
 
+    let accumulatedQuadsArea = 0;
+    for(let i = 0; i < quads.length; i++) {
+        let quad = quads[i];
+
+        let lx1 = quad.v1.x; 
+        let ly1 = quad.v1.y;
+        let lz1 = quad.v1.z;
+    
+        let lx2 = quad.v2.x; 
+        let ly2 = quad.v2.y;
+        let lz2 = quad.v2.z;
+
+        let weight = quad.weight || 1;
+    
+        let dx = lx1 - lx2;
+        let dy = ly1 - ly2;
+        let dz = lz1 - lz2;
+        let sideLength = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        let areaLength = (sideLength * sideLength) * weight;
+
+        accumulatedQuadsArea += areaLength;
+    }
+    let pointsPerUnitArea = quadPointsPerFrame / accumulatedQuadsArea;
+
     for(let j = 0; j < quads.length; j++) {
 
         let quad = quads[j];
@@ -366,6 +390,12 @@ function createQuadsGeometry() {
         let ly3 = quad.v3.y;
         let lz3 = quad.v3.z;
 
+        let weight = quad.weight || 1;
+
+        if(weight !== 1) {
+            let debug = 0;
+        }
+
         let u1 = quad.uv1.x;
         let v1 = quad.uv1.y;
 
@@ -373,8 +403,20 @@ function createQuadsGeometry() {
         let v2 = quad.uv2.y;
 
     
-        let points = pointsPerLine;
-        let invPointsPerLine = 1 / points;
+        let points = pointsPerQuad;
+        let invPointsPerQuad = 1 / points;
+
+        if(useLengthSampling) {
+            let dx = lx1 - lx2;
+            let dy = ly1 - ly2;
+            let dz = lz1 - lz2;
+            let sideLength = Math.sqrt(dx*dx + dy*dy + dz*dz);
+            let areaLength = (sideLength * sideLength);
+
+            points = Math.max(  Math.floor(pointsPerUnitArea * areaLength * weight), 1  );
+            invPointsPerQuad = 1 / points;
+        }
+
 
         for(let ppr = 0; ppr < points; ppr++) {
             position1.push(lx1, ly1, lz1);
@@ -382,7 +424,7 @@ function createQuadsGeometry() {
             position3.push(lx3, ly3, lz3);
             uv1.push(u1, v1);
             uv2.push(u2, v2);
-            color.push(quad.col.x * invPointsPerLine, quad.col.y * invPointsPerLine, quad.col.z * invPointsPerLine);
+            color.push(quad.col.x * invPointsPerQuad, quad.col.y * invPointsPerQuad, quad.col.z * invPointsPerQuad);
 
             seeds.push(Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100);    
         }

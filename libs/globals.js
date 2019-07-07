@@ -13,15 +13,17 @@ var drawCallsPerFrame = 10;
 
 
 // wether each line has assigned a quantity of points proportional to its length or a fixed number instead
-var useLengthSampling = false;
+var useLengthSampling = true;
 
 // if $useLengthSampling is false, every line will by rendered by default with $pointsPerLine points
 var pointsPerLine     = 500;
+var pointsPerQuad     = 500;
 
 // if $useLengthSampling is true, every line will be drawn with an amount of points that is proportional to the line's length,
 // use $pointsPerFrame to determine how many points will be drawn in a single drawcall. Keep in mind that each line is drawn with
 // at least one point
-var pointsPerFrame = 500000;
+var pointsPerFrame     = 500000;
+var quadPointsPerFrame = 50000;
 
 
 
