@@ -117,7 +117,7 @@ function init() {
         vertexShader: quadv,
         fragmentShader: quadf,
         uniforms: {
-            uTexture: { type: "t",   value: new THREE.TextureLoader().load("assets/textures/ExportedFont1.bmp") },
+            uTexture: { type: "t",   value: new THREE.TextureLoader().load(quadsTexturePath) },
             uTime: { value: 0 },
             uRandom: { value: 0 },
             uRandomVec4: new THREE.Uniform(new THREE.Vector4(0, 0, 0, 0)),

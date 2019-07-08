@@ -11,6 +11,8 @@ var minimumLineSize = 0.015;
 // how many render calls are made each frame
 var drawCallsPerFrame = 10;
 
+var quadsTexturePath = "assets/textures/ExportedFont1.bmp";
+
 
 // wether each line has assigned a quantity of points proportional to its length or a fixed number instead
 var useLengthSampling = true;
@@ -24,7 +26,6 @@ var pointsPerQuad     = 500;
 // at least one point
 var pointsPerFrame     = 500000;
 var quadPointsPerFrame = 500000;
-
 
 
 var useBokehTexture  = false;
