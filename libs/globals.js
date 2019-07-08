@@ -1,6 +1,6 @@
 // camera parameters
 var cameraFocalDistance = 49.19;
-var bokehStrength = 0.095;
+var bokehStrength = 0; //0.095;
 var exposure = 0.0019;
 // set to 1 to have non-linear increase in focal strength
 var focalPowerFunction = 0;
@@ -23,9 +23,9 @@ var pointsPerQuad     = 500;
 // use $pointsPerFrame to determine how many points will be drawn in a single drawcall. Keep in mind that each line is drawn with
 // at least one point
 var pointsPerFrame     = 500000;
-var quadPointsPerFrame = 50000;
+var quadPointsPerFrame = 500000;
 
 
 
-var useBokehTexture = false;
-var bokehTexturePath = "assets/bokeh/pentagon.png";
+var useBokehTexture  = false;
+var bokehTexturePath = "assets/bokeh/c1.png";

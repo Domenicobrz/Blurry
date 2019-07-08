@@ -44,12 +44,13 @@ function init() {
     scene            = new THREE.Scene();
     postProcScene    = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera( 20, innerWidth / innerHeight, 2, 200 );
-    let dirVec = new THREE.Vector3(-5, -5, 10).normalize().multiplyScalar(49);
-    camera.position.set( dirVec.x, dirVec.y, dirVec.z );
+    camera = new THREE.PerspectiveCamera( 20, innerWidth / innerHeight, 2, 2000 );
+    // let dirVec = new THREE.Vector3(-5, -5, 10).normalize().multiplyScalar(49);
+    // camera.position.set( dirVec.x, dirVec.y, dirVec.z );
+    camera.position.set( 0, 0, 100 );
 
 
-    postProcCamera = new THREE.PerspectiveCamera( 20, innerWidth / innerHeight, 2, 200 );
+    postProcCamera = new THREE.PerspectiveCamera( 20, innerWidth / innerHeight, 2, 2000 );
     postProcCamera.position.set(0, 0, 10);
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -116,7 +117,7 @@ function init() {
         vertexShader: quadv,
         fragmentShader: quadf,
         uniforms: {
-            uTexture: { type: "t",   value: new THREE.TextureLoader().load("assets/textures/example6.jpg") },
+            uTexture: { type: "t",   value: new THREE.TextureLoader().load("assets/textures/ExportedFont1.bmp") },
             uTime: { value: 0 },
             uRandom: { value: 0 },
             uRandomVec4: new THREE.Uniform(new THREE.Vector4(0, 0, 0, 0)),
@@ -225,8 +226,17 @@ function createLinesWrapper(frames) {
     lines = [];
     scene.remove(scene.getObjectByName("points"));
 
-    createLines(frames);
+    quads = [];
+    scene.remove(scene.getObjectByName("quad-points"));
 
+
+
+
+    createScene(frames);
+
+
+
+    // ***************** lines creation
     createLinesGeometry();
     let mesh = new THREE.Points(linesGeometry, linesMaterial);
     mesh.name = "points";
@@ -236,14 +246,7 @@ function createLinesWrapper(frames) {
 
 
 
-
-
     // ***************** quads creation 
-    quads = [];
-    scene.remove(scene.getObjectByName("quad-points"));
-
-    createQuads(frames);
-
     createQuadsGeometry();
     let quadmesh = new THREE.Points(quadsGeometry, quadsMaterial);
     quadmesh.name = "quad-points";

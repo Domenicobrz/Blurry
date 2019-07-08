@@ -1,4 +1,4 @@
-function createLines() {
+function createScene(frames) {
     let nrings = 150;
 
     for(let j = 0; j < nrings; j++) {
