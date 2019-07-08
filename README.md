@@ -97,6 +97,9 @@ var useBokehTexture  = false;
 var bokehTexturePath = "assets/bokeh/c1.png";
 
 ```
+Alternatively, you can create a `setGlobals` function inside `libs/createScene.js` to modify any variable of `libs/globals.js`
+In case `setGlobals` is specified, it will be called before any other function
+
 
 The threejs source attached in the repo was modified to always disable frustum culling (check `libs/main.js` to see the exact changes)
 

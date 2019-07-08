@@ -1,16 +1,24 @@
+function setGlobals() {
+    cameraPosition = new THREE.Vector3(0, 20, 70);
+    cameraTarget   = new THREE.Vector3(0, 0, 0);
+    cameraFocalDistance = 58.4;
+
+    bokehStrength  = 0.01;
+}
+
 // use this function to create the lines that will be rendered
 function createScene(frame) {
     
-    
+    Utils.setRandomSeed("cauliflower1");
 
 
     function createTree(sv, relRot, level) {
         if(level >= 6) return;
 
         let v1 = sv.clone();
-        let v2 = new THREE.Vector3(0, (1 + ((6 - level) * 0.5)) * (Math.random() + 0.15), 0);
-        v2.applyAxisAngle(new THREE.Vector3(0, 0, 1), relRot + (Math.random() * 2 - 1) * 0.25);
-        v2.applyAxisAngle(new THREE.Vector3(1, 0, 0), (Math.random() * 2 - 1) * 0.25);
+        let v2 = new THREE.Vector3(0, (1 + ((6 - level) * 0.5)) * (Utils.rand() + 0.15), 0);
+        v2.applyAxisAngle(new THREE.Vector3(0, 0, 1), relRot + (Utils.rand() * 2 - 1) * 0.25);
+        v2.applyAxisAngle(new THREE.Vector3(1, 0, 0), (Utils.rand() * 2 - 1) * 0.25);
         v2.add(v1);
 
         let colorMult = 1;
@@ -34,18 +42,18 @@ function createScene(frame) {
         });
 
 
-        if(Math.random() > 0.3)
+        if(Utils.rand() > 0.3)
             createTree(v2, relRot - 0.5, level + 1);
         
-        if(Math.random() > 0.85)
+        if(Utils.rand() > 0.85)
             createTree(v2, relRot + 0.0, level + 1);
 
-        if(Math.random() > 0.3)
+        if(Utils.rand() > 0.3)
             createTree(v2, relRot + 0.5, level + 1);
 
 
 
-        if(level === 5 && (Math.abs(relRot) > 0.5) && Math.random() > 0.5) {
+        if(level === 5 && (Math.abs(relRot) > 0.5) && Utils.rand() > 0.5) {
             createFallingText(v2);
         } 
     }
@@ -54,12 +62,12 @@ function createScene(frame) {
 
     for(let i = 0; i < 40; i++) {
 
-        let x = (Math.random() * 2 - 1) * 30;
-        let z = -(Math.random()) * 90 + 30;
+        let x = (Utils.rand() * 2 - 1) * 30;
+        let z = -(Utils.rand()) * 90 + 30;
 
         let pos = new THREE.Vector3(x, 0, z);
-        pos.x += (Math.random() * 2 - 1) * 2;
-        pos.z += (Math.random() * 2 - 1) * 2;
+        pos.x += (Utils.rand() * 2 - 1) * 2;
+        pos.z += (Utils.rand() * 2 - 1) * 2;
 
         createTree(pos, 0, 1);        
     }
@@ -68,25 +76,25 @@ function createScene(frame) {
 
     function createFallingText(start) {
 
-        let chars = Math.floor(4 + Math.random() * 5);
+        let chars = Math.floor(4 + Utils.rand() * 5);
 
-        let a1Start = Math.random() * Math.PI * 2;
+        let a1Start = Utils.rand() * Math.PI * 2;
 
         for(let i = 0; i < chars; i++) {
 
             let index = 0;
 
             if(i === 0)
-                index = Math.floor(33 + Math.random() * 25);
+                index = Math.floor(33 + Utils.rand() * 25);
             else
-                index = Math.floor(65 + Math.random() * 22);
+                index = Math.floor(65 + Utils.rand() * 22);
 
                               // 16 * 16 because uvs starts from the bottom 
             let t = indexToUvs(16 * 16 - index);
 
 
-            let maxRot = 0.1 + Math.random() * 0.3;
-            let maxRotSpeed = 0.5 + Math.random() * 0.9;
+            let maxRot = 0.1 + Utils.rand() * 0.3;
+            let maxRotSpeed = 0.5 + Utils.rand() * 0.9;
             let a1 = Math.sin(a1Start + i * maxRotSpeed) * maxRot;
 
             let color = {
@@ -94,7 +102,7 @@ function createScene(frame) {
                 y: 100,
                 z: 100,
             };
-            if(Math.random() > 0.85) {
+            if(Utils.rand() > 0.85) {
                 color.x = 10;
                 color.y = 30;
                 color.z = 100;
@@ -150,22 +158,22 @@ function createScene(frame) {
 
     for(let i = 0; i < 85000; i++) {
         let v1 = new THREE.Vector3(
-            (Math.random() * 2 - 1) * 45,
-            0, // (Math.random() * 2 - 1) * 30,
-            Math.floor((Math.random() * 2 - 1) * 135) * 0.375,
+            (Utils.rand() * 2 - 1) * 45,
+            0, // (Utils.rand() * 2 - 1) * 30,
+            Math.floor((Utils.rand() * 2 - 1) * 135) * 0.375,
         );
 
-        let v2 = new THREE.Vector3(0, 0.1 + Math.random() * 1.15, 0);
+        let v2 = new THREE.Vector3(0, 0.1 + Utils.rand() * 1.15, 0);
         let ax = 1;
         let az = 0;
-        if(Math.random() > 0.5) {
+        if(Utils.rand() > 0.5) {
             ax = 0;
             az = 1;
         }
-        v2.applyAxisAngle(new THREE.Vector3(ax, 0, az), (Math.random() * 2 - 1) * 0.25);
+        v2.applyAxisAngle(new THREE.Vector3(ax, 0, az), (Utils.rand() * 2 - 1) * 0.25);
         v2.add(v1);
 
-        let colorMult = 0.05 * Math.pow(Math.random(), 1.25) * 0.95;
+        let colorMult = 0.05 * Math.pow(Utils.rand(), 1.25) * 0.95;
 
         lines.push({
             x1: v1.x,
