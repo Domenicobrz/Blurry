@@ -1,4 +1,4 @@
-function createLines() {
+function createScene(frames) {
     Utils.setRandomSeed("Keanu Reeves");
 
     for(let i = 50; i < 100; i++) {

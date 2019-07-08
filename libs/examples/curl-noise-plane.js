@@ -1,4 +1,4 @@
-function createLines() {
+function createScene(frames) {
     for(let j = -50; j < 50; j++) {
         for(let i = -50; i < 50; i++) {
             let x1 = i * 0.25;

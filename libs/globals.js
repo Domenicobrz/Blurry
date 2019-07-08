@@ -1,6 +1,6 @@
 // camera parameters
 var cameraFocalDistance = 49.19;
-var bokehStrength = 0.095;
+var bokehStrength = 0; //0.095;
 var exposure = 0.0019;
 // set to 1 to have non-linear increase in focal strength
 var focalPowerFunction = 0;
@@ -9,16 +9,24 @@ var focalPowerFunction = 0;
 var minimumLineSize = 0.015;
 
 // how many render calls are made each frame
-var drawCallsPerFrame = 5;
+var drawCallsPerFrame = 10;
+
+var quadsTexturePath = "assets/textures/ExportedFont1.bmp";
 
 
 // wether each line has assigned a quantity of points proportional to its length or a fixed number instead
-var useLengthSampling = false;
+var useLengthSampling = true;
 
 // if $useLengthSampling is false, every line will by rendered by default with $pointsPerLine points
-var pointsPerLine     = 25;
+var pointsPerLine     = 500;
+var pointsPerQuad     = 500;
 
 // if $useLengthSampling is true, every line will be drawn with an amount of points that is proportional to the line's length,
 // use $pointsPerFrame to determine how many points will be drawn in a single drawcall. Keep in mind that each line is drawn with
 // at least one point
-var pointsPerFrame = 1000000;
+var pointsPerFrame     = 500000;
+var quadPointsPerFrame = 500000;
+
+
+var useBokehTexture  = false;
+var bokehTexturePath = "assets/bokeh/c1.png";

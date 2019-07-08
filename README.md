@@ -10,10 +10,10 @@ Simulating depth of field with particles on a shader
 How to use
 ======
 
-Inside `libs/createLines.js` you can code the scene you want to render, only lines are supported atm, here's an example on how to populate the `lines` array:
+Inside `libs/createLines.js` you can code the scene you want to render, only lines and quads are supported atm, here's an example on how to populate the `lines` array:
 
 ```javascript
-function createLines() {
+function createScene() {
     // lines is a global array
     lines.push({
         // first vertex of the line
@@ -39,8 +39,20 @@ function createLines() {
         // optional, if $useLengthSampling is set to true this variable will change the weight this lines has in the distribution of points for each line
         weight: 1,
     });
+
+
+    // quads is a global array
+    let quad = new Quad(0,0,0, /* <- starting position */ 0,0,1,1 /* texture uvs */)
+                   .scale(0.5)
+                   .color(100, 50, 10)
+                   .translate(0, 1, 0)
+                   .rotate(0, 0, 1, /* <- rotation axis */, 0.5 /* <- rotation angle */)
+    // quads is a global array
+    quads.push(quad);
 }
 ```
+
+Quads can make use of a single texture, specified in `libs/globals.js` 
 
 ------
 
@@ -60,17 +72,30 @@ var minimumLineSize = 0.015;
 // how many render calls are made each frame
 var drawCallsPerFrame = 5;
 
+// texture used by quads when specifying uvs
+var quadsTexturePath = "assets/textures/ExportedFont1.bmp";
+
 
 // wether each line has assigned a quantity of points proportional to its length or a fixed number instead
 var useLengthSampling = false;
 
-// if $useLengthSampling is false, every line will by rendered by default with $pointsPerLine points
+// if $useLengthSampling is false, every line will by rendered by default with $pointsPerLine points, same for $pointsPerQuad
 var pointsPerLine     = 25;
+var pointsPerQuad     = 500;
 
-// if $useLengthSampling is true, every line will be drawn with an amount of points that is proportional to the line's length,
-// use $pointsPerFrame to determine how many points will be drawn in a single drawcall. Keep in mind that each line is drawn with
+// if $useLengthSampling is true, every line will be drawn with an amount of points that 
+// is proportional to the line's length, (or quad's area length for $quadPointsPerFrame)
+// use $pointsPerFrame/$quadPointsPerFrame to determine how many points will be drawn in 
+// a single drawcall. Keep in mind that each line/quad is drawn with
 // at least one point
 var pointsPerFrame = 1000000;
+var quadPointsPerFrame = 500000;
+
+// wether to use a bokeh texture or not, keep an eye on render times
+// since they will be a bit slower when using bokeh textures
+var useBokehTexture  = false;
+var bokehTexturePath = "assets/bokeh/c1.png";
+
 ```
 
 The threejs source attached in the repo was modified to always disable frustum culling (check `libs/main.js` to see the exact changes)
