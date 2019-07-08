@@ -33,6 +33,8 @@ var offscreenRT;
 var controls = { };
 
 function init() {    
+    if(setGlobals) setGlobals();
+
     renderer = new THREE.WebGLRenderer( {  } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( innerWidth, innerHeight );
@@ -47,13 +49,15 @@ function init() {
     camera = new THREE.PerspectiveCamera( 20, innerWidth / innerHeight, 2, 2000 );
     // let dirVec = new THREE.Vector3(-5, -5, 10).normalize().multiplyScalar(49);
     // camera.position.set( dirVec.x, dirVec.y, dirVec.z );
-    camera.position.set( 0, 0, 100 );
+    // camera.position.set( 0, 0, 100 );
+    camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
 
     postProcCamera = new THREE.PerspectiveCamera( 20, innerWidth / innerHeight, 2, 2000 );
     postProcCamera.position.set(0, 0, 10);
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(cameraTarget.x, cameraTarget.y, cameraTarget.z);
     controls.rotateSpeed     = 1;
 	controls.minAzimuthAngle = -Infinity; 
 	controls.maxAzimuthAngle = +Infinity; 
@@ -102,6 +106,10 @@ function init() {
             uBokehTexture: { type: "t", value: new THREE.TextureLoader().load(bokehTexturePath) },
         },
 
+        defines: {
+            USE_BOKEH_TEXTURE: (useBokehTexture ? 1 : 0)
+        },
+
         side:           THREE.DoubleSide,
         depthTest:      false,
 
@@ -126,6 +134,10 @@ function init() {
             uMinimumLineSize: { value: minimumLineSize },
             uFocalPowerFunction: { value: focalPowerFunction },
             uBokehTexture: { type: "t", value: new THREE.TextureLoader().load(bokehTexturePath) },
+        },
+
+        defines: {
+            USE_BOKEH_TEXTURE: (useBokehTexture ? 1 : 0)
         },
 
         side:           THREE.DoubleSide,

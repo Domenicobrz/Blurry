@@ -1,4 +1,7 @@
 // camera parameters
+var cameraPosition = new THREE.Vector3(0, 0, 100);
+var cameraTarget   = new THREE.Vector3(0, 0, 0);
+
 var cameraFocalDistance = 49.19;
 var bokehStrength = 0; //0.095;
 var exposure = 0.0019;

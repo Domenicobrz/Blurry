@@ -19,9 +19,6 @@ uniform float uFocalPowerFunction;
 uniform float uTime;
 
 
-#define USE_BOKEH_TEXTURE ` + (useBokehTexture ? 1 : 0) + `
-
-
 varying vec3 vColor;
 
 

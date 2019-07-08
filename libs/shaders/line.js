@@ -14,8 +14,6 @@ uniform float uTime;
 
 uniform sampler2D uBokehTexture;
 
-#define USE_BOKEH_TEXTURE ` + (useBokehTexture ? 1 : 0) + `
-
 varying vec3 vColor;
 
 
