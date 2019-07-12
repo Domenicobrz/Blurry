@@ -35,6 +35,8 @@ var controls = { };
 function init() {    
     if(setGlobals) setGlobals();
 
+    initCurlNoise();
+
     renderer = new THREE.WebGLRenderer( {  } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( innerWidth, innerHeight );
@@ -202,27 +204,27 @@ function render(now) {
 
 
     // used to make GIF animations
-    // if(lastFrameDate + 3000 < Date.now()) {
-    //     frames++;
-    //     createLinesWrapper(frames);
-    //     resetCanvas();
+    if(lastFrameDate + millisecondsPerFrame < Date.now()) {
+        frames++;
+        createLinesWrapper(frames);
+        resetCanvas();
 
-    //     lastFrameDate = Date.now();
+        lastFrameDate = Date.now();
 
-    //     var photo = canvas.toDataURL('image/jpeg');                
-    //     $.ajax({
-    //         method: 'POST',
-    //         url: 'photo_upload.php',
-    //         data: {
-    //             photo: photo
-    //         }
-    //     });
+        // var photo = canvas.toDataURL('image/jpeg');                
+        // $.ajax({
+        //     method: 'POST',
+        //     url: 'photo_upload.php',
+        //     data: {
+        //         photo: photo
+        //     }
+        // });
 
-    //     if(frames === 200) {
-    //         lastFrameDate = Infinity;
-
-    //     }
-    // }
+        if(frames === framesCount) {
+            lastFrameDate = Infinity;
+            // frames = 0;
+        }
+    }
 }
 
 
@@ -407,7 +409,7 @@ function createQuadsGeometry() {
 
         let weight = quad.weight || 1;
 
-        if(weight !== 1) {
+        if(j === 829) {
             let debug = 0;
         }
 
@@ -483,23 +485,23 @@ function buildControls() {
 
 function checkControls() {
     if(controls["o"]) {
-        cameraFocalDistance -= 0.2;
+        cameraFocalDistance -= 0.6;
         console.log("cfd: " + cameraFocalDistance);
         resetCanvas();
     }
     if(controls["p"]) {
-        cameraFocalDistance += 0.2;        
+        cameraFocalDistance += 0.6;        
         console.log("cfd: " + cameraFocalDistance);
         resetCanvas();
     }
     
     if(controls["k"]) {
-        bokehStrength += 0.0025;
+        bokehStrength += 0.001;
         console.log("bs: " + bokehStrength);
         resetCanvas();    
     }
     if(controls["l"]) {
-        bokehStrength -= 0.0025;        
+        bokehStrength -= 0.001;        
         bokehStrength = Math.max(bokehStrength, 0);        
         console.log("bs: " + bokehStrength);
         resetCanvas();

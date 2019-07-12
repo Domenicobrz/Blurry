@@ -127,7 +127,7 @@ void main() {
 	// );
 
 	// vColor = vec3(
-	// 	vColor.r / (1.0 + pow(distanceFromFocalPoint * 0.015, 2.71828)),
+	//	vColor.r / (1.0 + pow(distanceFromFocalPoint * 0.015, 2.71828)),
 	// 	vColor.g / (1.0 + pow(distanceFromFocalPoint * 0.015, 2.71828)),
 	// 	vColor.b / (1.0 + pow(distanceFromFocalPoint * 0.015, 2.71828))	
 	// );

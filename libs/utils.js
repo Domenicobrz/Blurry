@@ -33,6 +33,10 @@ Utils.setRandomSeed = function(string) {
     Utils.rand = sfc32(seed(), seed(), seed(), seed());
 }
 
+Utils.getSeed = function() {
+    return seed();
+}
+
 Utils.hslToRgb = function(h, s, l) {
     var r, g, b;
 

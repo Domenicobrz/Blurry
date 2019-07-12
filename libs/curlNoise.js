@@ -339,7 +339,10 @@ function pnoisev3(px, py, pz) {
 }
 
 
-noise.seed(Math.random());
+function initCurlNoise() {
+    noise.seed(Utils.getSeed());
+}
+
 /* vec3 */ function curlNoise( /* vec3 */ p ) {
     let e = 0.1;
 

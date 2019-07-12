@@ -10,7 +10,7 @@ function setGlobals() {
 
     useBokehTexture = true;
     bokehTexturePath = "assets/bokeh/pentagon.png";
-
+    quadsTexturePath = "assets/textures/texture1.png";
 
     // let seed = Date.now();
     Utils.setRandomSeed("1562701299834");
