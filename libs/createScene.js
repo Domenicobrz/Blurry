@@ -6,7 +6,7 @@ function setGlobals() {
     // bokehStrength  = 0.018;
     bokehStrength  = 0.01;
     focalPowerFunction = 1;
-    exposure = 0.0011;
+    exposure = 0.0009;
 
     useBokehTexture = true;
     bokehTexturePath = "assets/bokeh/pentagon.png";
@@ -24,7 +24,7 @@ function createScene(frame) {
     let groundM1 = 0.03;
     let groundDispStrength = 1.15;
 
-    let quadColorMult = 1.3;
+    let quadColorMult = 0.385;
 
     let at = frame / framesCount;
     let t = 0;

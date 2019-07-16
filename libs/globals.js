@@ -12,7 +12,7 @@ var focalPowerFunction = 0;
 var minimumLineSize = 0.015;
 
 // how many render calls are made each frame
-var drawCallsPerFrame = 10;
+var drawCallsPerFrame = 100;
 
 var quadsTexturePath = "assets/textures/texture1.png";
 
@@ -27,8 +27,8 @@ var pointsPerQuad     = 500;
 // if $useLengthSampling is true, every line will be drawn with an amount of points that is proportional to the line's length,
 // use $pointsPerFrame to determine how many points will be drawn in a single drawcall. Keep in mind that each line is drawn with
 // at least one point
-var pointsPerFrame     = 500000;
-var quadPointsPerFrame = 500000;
+var pointsPerFrame     = 50000;
+var quadPointsPerFrame = 50000;
 
 // animation params
 var millisecondsPerFrame = Infinity;

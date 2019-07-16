@@ -10,7 +10,7 @@ Simulating depth of field with particles on a shader
 How to use
 ======
 
-Inside `libs/createLines.js` you can code the scene you want to render, only lines and quads are supported atm, here's an example on how to populate the `lines` array:
+Inside `libs/createScene.js` you can code the scene you want to render, only lines and quads are supported atm, here's an example on how to populate the `lines` array:
 
 ```javascript
 function createScene(frame) {   // frame is used to make animations, I'll update soon the readme to explain how that's done
