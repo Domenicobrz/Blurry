@@ -215,14 +215,14 @@ function render(now) {
         if(frames % motionBlurFrames === 0) {
             resetCanvas();
 
-            var photo = canvas.toDataURL('image/jpeg');                
-            $.ajax({
-                method: 'POST',
-                url: 'photo_upload.php',
-                data: {
-                    photo: photo
-                }
-            });
+            // var photo = canvas.toDataURL('image/jpeg');                
+            // $.ajax({
+            //     method: 'POST',
+            //     url: 'photo_upload.php',
+            //     data: {
+            //         photo: photo
+            //     }
+            // });
         }
 
         lastFrameDate = Date.now();
