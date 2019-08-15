@@ -8,6 +8,8 @@ var controls;
 var renderer;
 var canvas;
 
+var preventOnControlsChangeReset = false;
+
 var postProcQuadMaterial;
 
 var capturerStarted = false;
@@ -28,6 +30,7 @@ var offscreenRT;
 
 // The threejs version used in this repo was modified at line: 23060  to disable frustum culling
 
+let frames = 0;
 
 
 var controls = { };
@@ -63,11 +66,12 @@ function init() {
     controls.rotateSpeed     = 1;
 	controls.minAzimuthAngle = -Infinity; 
 	controls.maxAzimuthAngle = +Infinity; 
-	controls.minPolarAngle   = 0.85;      
-    controls.maxPolarAngle   = Math.PI - 0.85; 
+	controls.minPolarAngle   = 0;      
+    controls.maxPolarAngle   = Math.PI - 0; 
 
     controls.addEventListener("change", function() {
-        resetCanvas();
+        if(!preventOnControlsChangeReset)
+            resetCanvas();
     });
 
 
@@ -154,7 +158,7 @@ function init() {
     });
 
 
-    createLinesWrapper(0);
+    createLinesWrapper(frames / motionBlurFrames);
 
 
     buildControls();
@@ -162,7 +166,6 @@ function init() {
 }  
 
 
-let frames = 0;
 let lastFrameDate = 0;
 function render(now) {
     requestAnimationFrame(render);
@@ -176,6 +179,7 @@ function render(now) {
     }
 
     controls.update();
+
 
     for(let i = 0; i < drawCallsPerFrame; i++) {
         samples++;
@@ -197,8 +201,8 @@ function render(now) {
 
         renderer.render(scene, camera, offscreenRT);
     }
-
-    postProcQuadMaterial.uniforms.uSamples.value = samples;
+   
+    postProcQuadMaterial.uniforms.uSamples.value  = samples;
     postProcQuadMaterial.uniforms.uExposure.value = exposure;
     renderer.render(postProcScene, postProcCamera);
 
@@ -206,21 +210,24 @@ function render(now) {
     // used to make GIF animations
     if(lastFrameDate + millisecondsPerFrame < Date.now()) {
         frames++;
-        createLinesWrapper(frames);
-        resetCanvas();
+        createLinesWrapper(frames / motionBlurFrames);
+
+        if(frames % motionBlurFrames === 0) {
+            resetCanvas();
+
+            var photo = canvas.toDataURL('image/jpeg');                
+            $.ajax({
+                method: 'POST',
+                url: 'photo_upload.php',
+                data: {
+                    photo: photo
+                }
+            });
+        }
 
         lastFrameDate = Date.now();
 
-        // var photo = canvas.toDataURL('image/jpeg');                
-        // $.ajax({
-        //     method: 'POST',
-        //     url: 'photo_upload.php',
-        //     data: {
-        //         photo: photo
-        //     }
-        // });
-
-        if(frames === framesCount) {
+        if(frames === (framesCount * motionBlurFrames)) {
             lastFrameDate = Infinity;
             // frames = 0;
         }

@@ -17,6 +17,8 @@ var drawCallsPerFrame = 100;
 var quadsTexturePath = "assets/textures/texture1.png";
 
 
+var motionBlurFrames = 5;   // needs to be an integer
+
 // wether each line has assigned a quantity of points proportional to its length or a fixed number instead
 var useLengthSampling = true;
 
@@ -31,7 +33,7 @@ var pointsPerFrame     = 50000;
 var quadPointsPerFrame = 50000;
 
 // animation params
-var millisecondsPerFrame = Infinity;
+var millisecondsPerFrame = Infinity; //1000; // 1000 / 5;
 var framesCount          = 200;
 
 // additional bokeh params
