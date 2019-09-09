@@ -2,6 +2,7 @@ window.addEventListener("load", init);
 
 var scene;
 var postProcScene;
+var shaderPassScene;
 var camera;
 var postProcCamera;
 var controls;
@@ -21,6 +22,8 @@ let linesMaterial;
 let quads = [ ];
 let quadsGeometry;
 let quadsMaterial;
+
+let shaderPassMaterial;
 
 let samples = 0;
 
@@ -50,6 +53,7 @@ function init() {
 
     scene            = new THREE.Scene();
     postProcScene    = new THREE.Scene();
+    shaderPassScene  = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera( 20, innerWidth / innerHeight, 2, 2000 );
     // let dirVec = new THREE.Vector3(-5, -5, 10).normalize().multiplyScalar(49);
@@ -90,12 +94,39 @@ function init() {
             texture: { type: "t", value: offscreenRT.texture },
             uSamples: { value: samples },
             uExposure: { value: exposure },
-            uBackgroundColor: new THREE.Uniform(new THREE.Vector3(21/255, 16/255, 16/255)),
+            uBackgroundColor: new THREE.Uniform(new THREE.Vector3(backgroundColor[0], backgroundColor[1], backgroundColor[2])),
+            uResolution: new THREE.Uniform(new THREE.Vector2(innerWidth, innerHeight)),
+            uCameraPosition: new THREE.Uniform(new THREE.Vector3(0,0,0)),
         },
         side: THREE.DoubleSide,
     });
     postProcScene.add(new THREE.Mesh(postProcQuadGeo, postProcQuadMaterial));
 
+
+
+
+    var shaderPassQuadGeo = new THREE.PlaneBufferGeometry(2,2);
+    shaderPassMaterial = new THREE.ShaderMaterial({
+        vertexShader: shaderpassv,
+        fragmentShader: shaderpassf,
+        uniforms: {
+            uTime: { value: 0 },
+            uResolution: new THREE.Uniform(new THREE.Vector2(innerWidth, innerHeight)),
+            uCameraPosition: new THREE.Uniform(new THREE.Vector3(0,0,0)),
+            uRandoms: new THREE.Uniform(new THREE.Vector4(0,0,0,0)),
+            uBokehStrength: { value: 0 },
+        },
+        side:           THREE.DoubleSide,
+        depthTest:      false,
+
+        blending:      THREE.CustomBlending,
+        blendEquation: THREE.AddEquation,
+        blendSrc:      THREE.OneFactor, 
+        blendSrcAlpha: THREE.OneFactor,
+        blendDst:      THREE.OneFactor, 
+        blendDstAlpha: THREE.OneFactor,  
+    });
+    shaderPassScene.add(new THREE.Mesh(shaderPassQuadGeo, shaderPassMaterial));
 
     
     linesMaterial = new THREE.ShaderMaterial({
@@ -110,6 +141,7 @@ function init() {
             uMinimumLineSize: { value: minimumLineSize },
             uFocalPowerFunction: { value: focalPowerFunction },
             uBokehTexture: { type: "t", value: new THREE.TextureLoader().load(bokehTexturePath) },
+            uDistanceAttenuation: { value: distanceAttenuation }, 
         },
 
         defines: {
@@ -140,6 +172,7 @@ function init() {
             uMinimumLineSize: { value: minimumLineSize },
             uFocalPowerFunction: { value: focalPowerFunction },
             uBokehTexture: { type: "t", value: new THREE.TextureLoader().load(bokehTexturePath) },
+            uDistanceAttenuation: { value: distanceAttenuation }, 
         },
 
         defines: {
@@ -190,6 +223,7 @@ function render(now) {
         linesMaterial.uniforms.uRandom.value = Math.random() * 1000;
         linesMaterial.uniforms.uTime.value = (now * 0.001) % 100;   // modulating time by 100 since it appears hash12 suffers with higher time values
         linesMaterial.uniforms.uRandomVec4.value = new THREE.Vector4(Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100);
+        linesMaterial.uniforms.uDistanceAttenuation.value = distanceAttenuation;
 
         quadsMaterial.uniforms.uBokehStrength.value = bokehStrength;
         quadsMaterial.uniforms.uFocalDepth.value = cameraFocalDistance;
@@ -198,12 +232,22 @@ function render(now) {
         quadsMaterial.uniforms.uRandom.value = Math.random() * 1000;
         quadsMaterial.uniforms.uTime.value = (now * 0.001) % 100;   // modulating time by 100 since it appears hash12 suffers with higher time values
         quadsMaterial.uniforms.uRandomVec4.value = new THREE.Vector4(Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100);
+        quadsMaterial.uniforms.uDistanceAttenuation.value = distanceAttenuation;
 
         renderer.render(scene, camera, offscreenRT);
     }
    
+    if(shaderpassf !== "") {
+        shaderPassMaterial.uniforms.uTime.value = (now * 0.001) % 1000;
+        shaderPassMaterial.uniforms.uRandoms.value = new THREE.Vector4(Math.random(), Math.random(), Math.random(), Math.random());
+        shaderPassMaterial.uniforms.uCameraPosition.value = new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z);
+        shaderPassMaterial.uniforms.uBokehStrength.value = bokehStrength;
+        renderer.render(shaderPassScene, postProcCamera, offscreenRT);    
+    }
+
     postProcQuadMaterial.uniforms.uSamples.value  = samples;
     postProcQuadMaterial.uniforms.uExposure.value = exposure;
+    postProcQuadMaterial.uniforms.uCameraPosition.value = new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z);
     renderer.render(postProcScene, postProcCamera);
 
 
@@ -215,21 +259,23 @@ function render(now) {
         if(frames % motionBlurFrames === 0) {
             resetCanvas();
 
-            // var photo = canvas.toDataURL('image/jpeg');                
-            // $.ajax({
-            //     method: 'POST',
-            //     url: 'photo_upload.php',
-            //     data: {
-            //         photo: photo
-            //     }
-            // });
+            if(captureFrames) {
+                var photo = canvas.toDataURL('image/jpeg');                
+                $.ajax({
+                    method: 'POST',
+                    url: 'photo_upload.php',
+                    data: {
+                        photo: photo
+                    }
+                });
+            }
         }
 
         lastFrameDate = Date.now();
 
         if(frames === (framesCount * motionBlurFrames)) {
             lastFrameDate = Infinity;
-            // frames = 0;
+            frames = 0;
         }
     }
 }
@@ -466,7 +512,6 @@ function createQuadsGeometry() {
 } 
 
 
-
 function buildControls() {
     window.addEventListener("keydown", function(e) {
         controls[e.key] = true;
@@ -486,6 +531,20 @@ function buildControls() {
             else                         focalPowerFunction = 0;
 
             resetCanvas();
+        }
+
+        if(e.key == "5") {
+            // if(layout) {
+            //     cameraFocalDistance = 99; //88; // dv.length();
+            //     bokehStrength = 0.1; //0.01;
+            // } else {
+            //     cameraFocalDistance = 88.2; //88; // dv.length();
+            //     bokehStrength = 0.012; //0.01;
+            // }
+
+            // layout = !layout;
+
+            // resetCanvas();
         }
     });
 }
@@ -531,5 +590,17 @@ function checkControls() {
         exposure -= 0.0001;
         exposure = Math.max(exposure, 0.0001);
         console.log("exp: " + exposure);
+    }
+
+    if(controls["u"]) {
+        distanceAttenuation += 0.003;
+        console.log("da: " + distanceAttenuation);
+        resetCanvas();
+    }
+    if(controls["i"]) {
+        distanceAttenuation -= 0.003;
+        distanceAttenuation = Math.max(distanceAttenuation, 0);
+        console.log("da: " + distanceAttenuation);
+        resetCanvas();
     }
 }

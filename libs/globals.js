@@ -5,6 +5,7 @@ var cameraTarget   = new THREE.Vector3(0, 0, 0);
 var cameraFocalDistance = 49.19;
 var bokehStrength = 0.025;
 var exposure = 0.0019;
+var distanceAttenuation = 0;
 // set to 1 to have non-linear increase in focal strength
 var focalPowerFunction = 0;
 
@@ -12,12 +13,12 @@ var focalPowerFunction = 0;
 var minimumLineSize = 0.015;
 
 // how many render calls are made each frame
-var drawCallsPerFrame = 100;
+var drawCallsPerFrame = 50;
 
 var quadsTexturePath = "assets/textures/texture1.png";
 
 
-var motionBlurFrames = 5;   // needs to be an integer
+var motionBlurFrames = 1; // needs to be an integer >= 1
 
 // wether each line has assigned a quantity of points proportional to its length or a fixed number instead
 var useLengthSampling = true;
@@ -33,9 +34,12 @@ var pointsPerFrame     = 50000;
 var quadPointsPerFrame = 50000;
 
 // animation params
-var millisecondsPerFrame = Infinity; //1000; // 1000 / 5;
+var millisecondsPerFrame = Infinity;
+// var millisecondsPerFrame = 7000/18;
 var framesCount          = 200;
+var captureFrames        = false;
 
 // additional bokeh params
 var useBokehTexture  = false;
 var bokehTexturePath = "assets/bokeh/c1.png";
+var backgroundColor  = [21/255, 16/255, 16/255];

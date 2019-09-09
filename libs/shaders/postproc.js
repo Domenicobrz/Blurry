@@ -14,11 +14,13 @@ uniform sampler2D texture;
 uniform float uSamples;
 uniform float uExposure;
 uniform vec3 uBackgroundColor;
+uniform vec3 uResolution;
+uniform vec3 uCameraPosition;
 
 varying vec2 vUv;
 
-void main() {
 
+void main() {
 
     float chromaticAberrationStrength = 0.0;
     // uncomment if you want CA
@@ -31,17 +33,20 @@ void main() {
         1.0
     );
 
-    
+    if(color.x < 0.0) color.x = 0.0;
+    if(color.y < 0.0) color.y = 0.0;
+    if(color.z < 0.0) color.z = 0.0;
 
     const float gamma = 1.0; //2.2;
     vec3 hdrColor = (color.rgb) / (uSamples * uExposure);
+
   
+
     // reinhard tone mapping
     vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
 
     // gamma correction 
     mapped = pow(mapped, vec3(1.0 / gamma));
-
 
 
     gl_FragColor = vec4(uBackgroundColor + mapped, 1.0);

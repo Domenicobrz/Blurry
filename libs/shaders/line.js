@@ -11,10 +11,15 @@ uniform float uBokehStrength;
 uniform float uMinimumLineSize;
 uniform float uFocalPowerFunction;
 uniform float uTime;
+uniform float uDistanceAttenuation;
 
 uniform sampler2D uBokehTexture;
 
 varying vec3 vColor;
+
+
+
+
 
 
 //  the function below is hash12 from https://www.shadertoy.com/view/4djSRW - I just renamed it nrand()
@@ -120,11 +125,11 @@ void main() {
 
 	// two different functions for color attenuation if you need it
 
-	// vColor = vec3(
-	// 	vColor.r * exp(-distanceFromFocalPoint * 0.1),
-	// 	vColor.g * exp(-distanceFromFocalPoint * 0.1),
-	// 	vColor.b * exp(-distanceFromFocalPoint * 0.1)	
-	// );
+	vColor = vec3(
+		vColor.r * exp(-distanceFromFocalPoint * uDistanceAttenuation),
+		vColor.g * exp(-distanceFromFocalPoint * uDistanceAttenuation),
+		vColor.b * exp(-distanceFromFocalPoint * uDistanceAttenuation)	
+	);
 
 	// vColor = vec3(
 	//	vColor.r / (1.0 + pow(distanceFromFocalPoint * 0.015, 2.71828)),

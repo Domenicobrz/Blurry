@@ -17,7 +17,7 @@ uniform float uBokehStrength;
 uniform float uMinimumLineSize;
 uniform float uFocalPowerFunction;
 uniform float uTime;
-
+uniform float uDistanceAttenuation;
 
 varying vec3 vColor;
 
@@ -140,11 +140,11 @@ void main() {
 
 	// two different functions for color attenuation if you need it
 
-	// vColor = vec3(
-	// 	vColor.r * exp(-distanceFromFocalPoint * 0.05),
-	// 	vColor.g * exp(-distanceFromFocalPoint * 0.05),
-	// 	vColor.b * exp(-distanceFromFocalPoint * 0.05)	
-	// );
+	vColor = vec3(
+		vColor.r * exp(-distanceFromFocalPoint * uDistanceAttenuation * 0.5),
+		vColor.g * exp(-distanceFromFocalPoint * uDistanceAttenuation * 0.5),
+		vColor.b * exp(-distanceFromFocalPoint * uDistanceAttenuation * 0.5)	
+	);
 
 	// vColor = vec3(
 	// 	vColor.r / (1.0 + pow(distanceFromFocalPoint * 0.05, 2.71828)),
