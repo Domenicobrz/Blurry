@@ -35,7 +35,6 @@ var quadPointsPerFrame = 50000;
 
 // animation params
 var millisecondsPerFrame = Infinity;
-// var millisecondsPerFrame = 7000/18;
 var framesCount          = 200;
 var captureFrames        = false;
 

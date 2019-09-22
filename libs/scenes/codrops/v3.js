@@ -74,35 +74,7 @@ function computeWeb() {
         findIntersectingEdges(vec3(x0, y0, z0), dir);
     }
 }
-
-function computeSparkles() {
-    for(let i = 0; i < 5500; i++) {
-        let v0 = vec3(nrand(), nrand(), nrand()).normalize().multiplyScalar(18 + rand() * 65);
-
-        let c = 1.325 * (0.3 + rand() * 0.7);
-        let s = 0.125;
-
-        if(rand() > 0.9) {
-            c *= 4;
-        }
-
-        lines.push(new Line({
-            v1: vec3(v0.x - s, v0.y, v0.z),
-            v2: vec3(v0.x + s, v0.y, v0.z),
-
-            c1: vec3(c, c, c),
-            c2: vec3(c, c, c),
-        }));    
-        
-        lines.push(new Line({
-            v1: vec3(v0.x, v0.y - s, v0.z),
-            v2: vec3(v0.x, v0.y + s, v0.z),
-    
-            c1: vec3(c, c, c),
-            c2: vec3(c, c, c),
-        }));    
-    }
-}
+function computeSparkles() { }
 
 
 function findIntersectingEdges(center, dir) {

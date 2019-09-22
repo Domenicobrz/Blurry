@@ -88,7 +88,7 @@ void main() {
         float x  = (ux * 2.0 - 1.0) * bokehStrength;
         float y  = (uy * 2.0 - 1.0) * bokehStrength;
 
-        float bokehVal = texture2D(uBokehTexture, vec2(ux, uy)).x;
+        vec3 bokehVal = texture2D(uBokehTexture, vec2(ux, uy)).xyz;
         viewSpacePositionT += vec3(x, y, 0.0);
         vColor *= bokehVal;
     #else

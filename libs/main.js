@@ -29,12 +29,8 @@ let samples = 0;
 
 var offscreenRT;
 
-
-
 // The threejs version used in this repo was modified at line: 23060  to disable frustum culling
-
 let frames = 0;
-
 
 var controls = { };
 
@@ -51,9 +47,9 @@ function init() {
     canvas = renderer.domElement;
 
 
-    scene            = new THREE.Scene();
-    postProcScene    = new THREE.Scene();
-    shaderPassScene  = new THREE.Scene();
+    scene           = new THREE.Scene();
+    postProcScene   = new THREE.Scene();
+    shaderPassScene = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera( 20, innerWidth / innerHeight, 2, 2000 );
     // let dirVec = new THREE.Vector3(-5, -5, 10).normalize().multiplyScalar(49);
