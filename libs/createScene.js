@@ -21,6 +21,8 @@ function setGlobals() {
 
 let rand, nrand;
 let vec3      = function(x,y,z) { return new THREE.Vector3(x,y,z) };
+let lightDir0 = vec3(1, 1, 0.2).normalize();
+let lightDir1 = vec3(-1, 1, 0.2).normalize();
 
 function createScene() {
     Utils.setRandomSeed("3926153465010");
@@ -73,6 +75,36 @@ function computeWeb() {
         let dir = vec3(nrand(), nrand(), nrand()).normalize();
         findIntersectingEdges(vec3(x0, y0, z0), dir);
     }
+
+    // recolor edges  
+    for(line of lines) {
+        let v1 = line.v1;
+
+        // these will be used as the "red vectors" of the previous example
+        let normal1 = v1.clone().normalize();
+
+   	    // lets calculate how much light the two endpoints of the line
+	    // will get from the "lightDir0" light source (the white light)
+	    // we need Math.max( ... , 0.1) to make sure the dot product doesn't get lower than
+	    // 0.1, this will ensure each point is at least partially lit by a light source and
+	    // doesn't end up being completely black
+        let diffuse0  = Math.max(lightDir0.dot(normal1) * 3, 0.15);
+        let diffuse1  = Math.max(lightDir1.dot(normal1) * 2, 0.2 );
+
+        let firstColor  = [diffuse0, diffuse0, diffuse0];
+        let secondColor = [2 * diffuse1, 0.2 * diffuse1, 0];
+
+        let r1 = firstColor[0] + secondColor[0];
+        let g1 = firstColor[1] + secondColor[1];
+        let b1 = firstColor[2] + secondColor[2];
+
+        let r2 = firstColor[0] + secondColor[0];
+        let g2 = firstColor[1] + secondColor[1];
+        let b2 = firstColor[2] + secondColor[2];
+
+        line.c1 = vec3(r1, g1, b1);
+        line.c2 = vec3(r2, g2, b2);
+    }
 }
 
 function computeSparkles() {
@@ -83,23 +115,32 @@ function computeSparkles() {
         let s = 0.125;
 
         if(rand() > 0.9) {
-            c *= 4;
+            c *= 4; 
         }
+
+        let normal1 = v0.clone().normalize();
+
+        let diffuse0  = Math.max(lightDir0.dot(normal1) * 3, 0.15);
+        let diffuse1  = Math.max(lightDir1.dot(normal1) * 2, 0.2 );
+
+        let r = diffuse0 + 2 * diffuse1;
+        let g = diffuse0 + 0.2 * diffuse1;
+        let b = diffuse0;
 
         lines.push(new Line({
             v1: vec3(v0.x - s, v0.y, v0.z),
             v2: vec3(v0.x + s, v0.y, v0.z),
 
-            c1: vec3(c, c, c),
-            c2: vec3(c, c, c),
+            c1: vec3(r * c, g * c, b * c),
+            c2: vec3(r * c, g * c, b * c),
         }));    
         
         lines.push(new Line({
             v1: vec3(v0.x, v0.y - s, v0.z),
             v2: vec3(v0.x, v0.y + s, v0.z),
     
-            c1: vec3(c, c, c),
-            c2: vec3(c, c, c),
+            c1: vec3(r * c, g * c, b * c),
+            c2: vec3(r * c, g * c, b * c),
         }));    
     }
 }
